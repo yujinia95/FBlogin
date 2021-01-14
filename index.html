@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>WEB1 - Welcome</title>
+  <meta charset="utf-8">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="colors.js"></script>
+  <script src="fetch/fetch.js"></script>
+  <script>
+
+    var checkLoginStatus = function(response) {
+      console.log(response);
+      // statusChangeCallback(response); 
+      if(response.status === 'connected'){
+        document.querySelector('#authBtn').value = 'Logout';
+      } else {
+        document.querySelector('#authBtn').value = 'Login';
+      }
+    }
+
+    window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '420114646073551',
+      cookie     : true,                     // Enable cookies to allow the server to access the session.
+      xfbml      : true,                     // Parse social plugins on this webpage.
+      version    : 'v9.0'           // Use this Graph API version for this call.
+    });
+
+    FB.getLoginStatus(checkLoginStatus);    // Called after the JS SDK has been initialized.        // Returns the login status.
+  };
+  </script>
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+</head>
+
+<body>
+  <input type="button" id="authBtn" value="checking..." onclick="
+    if(this.value === 'Login'){
+    // now logout
+    FB.login(function(response){
+      console.log('login =>', res);
+      checkLoginStatus(res);
+    });
+    } else {
+    // now login
+    FB.logout(function(res){
+      console.log('logout =>', res);
+      checkLoginStatus(res);
+    });
+    }
+    ">
+
+  <article>
+
+  </article>
+  <h1><a href="#!welcome">WEB</a></h1>
+  <input id="night_day" type="button" value="night" onclick="
+    nightDayHandler(this);
+  ">
+  <ol id="nav">
+  </ol>
+  <h2>WEB</h2>
+  <p>The World Wide Web (abbreviated WWW or the Web) is an information space where documents and other web resources are
+    identified by Uniform Resource Locators (URLs), interlinked by hypertext links, and can be accessed via the
+    Internet.[1] English scientist Tim Berners-Lee invented the World Wide Web in 1989. He wrote the first web browser
+    computer program in 1990 while employed at CERN in Switzerland.[2][3] The Web browser was released outside of CERN
+    in 1991, first to other research institutions starting in January 1991 and to the general public on the Internet in
+    August 1991.
+  </p>
+  <script>
+  function fetchPage(name){
+    fetch(name).then(function(response){
+      response.text().then(function(text){
+        document.querySelector('article').innerHTML = text;
+      })
+    });
+  }
+  
+  if(location.hash){
+    fetchPage(location.hash.substring(2));
+  } else {
+    fetchPage('welcome');
+  }
+
+
+  fetch('list').then(function(response){
+     response.text().then(function(text){
+    console.log(text)
+    var items = text.split(",");
+    var i = 0;
+    var tags = '';
+    while (i<items.length){
+      var item = items[i];
+      item = item.trim();
+      var tag = '<li><a href="#!'+item+'" onclick="fetchPage(\''+item+'\')">'+item+'</a></li>';
+      tags = tags + tag;
+      i = i + 1;
+    }
+       document.querySelector('#nav').innerHTML = tags;
+     })
+  });
+
+  </script>
+</body>
+
+</html>
